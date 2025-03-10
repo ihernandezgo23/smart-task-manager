@@ -4,6 +4,7 @@ import { v4 as uuidv4 } from "uuid";
 
 export default function MainPage() {
     const [tasks, setTasks] = useState<Task[]>([]);
+    const [editingTaskId, setEditingTaskId] = useState<string | null>(null);
     const [newTask, setNewTask] = useState<Omit<Task, "id" | "createdAt" | "updatedAt">>({
         title: "",
         description: "",
@@ -15,18 +16,40 @@ export default function MainPage() {
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
         const { name, value } = e.target;
-        setNewTask({ ...newTask, [name]: value });
+        setNewTask((prevTask) => ({
+            ...prevTask,
+            [name]: name === "deadline" ? new Date(value) : value
+        }));
+        console.log(`Changed ${name} to ${value}`);
     };
 
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
-        const taskWithId: Task = {
-            ...newTask,
-            id: uuidv4(),
-            createdAt: new Date(),
-            updatedAt: new Date(),
-        };
-        setTasks([...tasks, taskWithId]);
+        if (editingTaskId) {
+            // Editing an existing task
+            setTasks((prevTasks) =>
+                prevTasks.map((task) =>
+                    task.id === editingTaskId ? { ...task, ...newTask, updatedAt: new Date() } : task
+                )
+            );
+            setEditingTaskId(null);
+            console.log("Task edited");
+        } else {
+            // Adding a new task
+            const taskWithId: Task = {
+                ...newTask,
+                id: uuidv4(),
+                createdAt: new Date(),
+                updatedAt: new Date(),
+            };
+            setTasks((prevTasks) => [...prevTasks, taskWithId]);
+            console.log("Task added");
+        }
+        console.log("Form submitted");
+        resetForm();
+    };
+
+    const resetForm = () => {
         setNewTask({
             title: "",
             description: "",
@@ -35,6 +58,20 @@ export default function MainPage() {
             deadline: null,
             isCompleted: false
         });
+        console.log("Form reset");
+    };
+
+    const toggleCompleteTask = (taskId: string) => {
+        setTasks((prevTasks) =>
+            prevTasks.map((task) =>
+                task.id === taskId ? { ...task, isCompleted: !task.isCompleted } : task
+            )
+        );
+    };
+
+    const handleEdit = (task: Task) => {
+        setNewTask({ ...task });
+        setEditingTaskId(task.id);
     };
 
     return (
@@ -54,15 +91,31 @@ export default function MainPage() {
                     <option value="medium">Medium</option>
                     <option value="high">High</option>
                 </select>
-                <button type="submit" className="w-full bg-blue-500 text-white p-2">Add Task</button>
+                <input type="date" name="deadline" value={newTask.deadline ? newTask.deadline.toISOString().split('T')[0] : ''} onChange={handleChange} className="w-full p-2 border" />
+                <button type="submit" className="w-full bg-blue-500 text-white p-2">
+                    {editingTaskId ? "Update Task" : "Add Task"}
+                </button>
             </form>
+
             <ul className="mt-4">
                 {tasks.map((task) => (
-                    <li key={task.id} className="border p-2 mt-2">
-                        <h3 className="font-bold">{task.title}</h3>
+                    <div key={task.id} className="border p-2 mt-2">
+                        <h3 className="font-bold">
+                            {task.title} {task.isCompleted && <span className="text-green-500">(Completed)</span>}
+                        </h3>
+
                         <p>{task.description}</p>
-                        <small>Category: {task.category} | Priority: {task.priority}</small>
-                    </li>
+                        <small>Category: {task.category} | Priority: {task.priority}</small><br />
+                        <small>Deadline: {task.deadline ? new Date(task.deadline).toLocaleDateString() : "No deadline"}</small><br />
+                        <div className="flex space-x-2 mt-2">
+                            <button onClick={() => toggleCompleteTask(task.id)} className="p-1 bg-green-500 text-white">
+                                {task.isCompleted ? "Decomplete" : "Complete"}
+                            </button>
+                            <button onClick={() => handleEdit(task)} className="p-1 bg-yellow-500 text-white">
+                                Edit
+                            </button>
+                        </div>
+                    </div>
                 ))}
             </ul>
         </div>
