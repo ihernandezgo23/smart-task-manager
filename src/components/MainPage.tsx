@@ -98,8 +98,13 @@ export default function MainPage() {
 
     // DELETE TASK
     const handleDelete = (taskId: string) => {
-        setTasks((prevTasks) => prevTasks.filter((task) => task.id !== taskId));
+        setTasks((prevTasks) => {
+            const updatedTasks = prevTasks.filter((task) => task.id !== taskId);
+            localStorage.setItem("tasks", JSON.stringify(updatedTasks)); // Update localStorage
+            return updatedTasks;
+        });
     };
+
 
     return (
         <div className="p-4 max-w-md mx-auto">
@@ -242,25 +247,27 @@ export default function MainPage() {
                 <p><strong>Deadline:</strong> {task.deadline ? new Date(task.deadline).toLocaleDateString() : "No deadline"}</p>
                 </div>
 
-                <div className="flex space-x-2 mt-3">
-                <button
-                    onClick={() => handleEdit(task)}
-                    className="px-3 py-1 bg-yellow-500 hover:bg-yellow-600 text-white rounded-md transition"
-                >
-                    Edit
-                </button>
-                <button
-                    onClick={() => handleDelete(task.id)}
-                    className="px-3 py-1 bg-red-500 hover:bg-red-600 text-white rounded-md transition"
-                >
-                    Delete
-                </button>
-                <button
-                    onClick={() => toggleCompleteTask(task.id)}
-                    className={`px-3 py-1 rounded-md text-white transition ${task.isCompleted ? "bg-gray-500 hover:bg-gray-600" : "bg-green-500 hover:bg-green-600"}`}
-                >
-                    {task.isCompleted ? "Mark Incomplete" : "Mark Complete"}
-                </button>
+                <div className="flex justify-between mt-2">
+                    <div className="flex space-x-2 mt-3">
+                        <button
+                            onClick={() => handleEdit(task)}
+                            className="px-3 py-1 bg-yellow-500 hover:bg-yellow-600 text-white rounded-md transition"
+                        >
+                            Edit
+                        </button>
+                        <button
+                            onClick={() => handleDelete(task.id)}
+                            className="px-3 py-1 bg-red-500 hover:bg-red-600 text-white rounded-md transition"
+                        >
+                            Delete
+                        </button>
+                    </div>
+                    <button
+                        onClick={() => toggleCompleteTask(task.id)}
+                        className={`px-3 py-1 rounded-md text-white transition ${task.isCompleted ? "bg-gray-500 hover:bg-gray-600" : "bg-green-500 hover:bg-green-600"}`}
+                    >
+                        {task.isCompleted ? "Mark Incomplete" : "Mark Complete"}
+                    </button>
                 </div>
             </div>
             ))}
