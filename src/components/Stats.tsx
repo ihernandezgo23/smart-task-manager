@@ -41,7 +41,7 @@ export default function Stats() {
                 <a href="/" className="mr-4">
                 <img src="/logo.png" alt="Logo" height={200} width={120} />
                 </a>
-                <h2 className="text-3xl ml-53 font-semibold text-gray-700">Task Filters</h2>
+                <h2 className="text-3xl ml-53 font-semibold text-gray-700">Task Stats</h2>
             </div>
 
             {/* Navigation */}
