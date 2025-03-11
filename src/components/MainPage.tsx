@@ -154,16 +154,18 @@ export default function MainPage() {
                 Category
                 </label>
                 <select
-                id="category"
-                name="category"
-                value={newTask.category}
-                onChange={handleChange}
-                className="w-50 mt-1 p-3 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
-                >
-                <option value="personal">Personal</option>
-                <option value="work">Work</option>
-                <option value="study">Study</option>
-                <option value="health">Health</option>
+                    id="category"
+                    name="category"
+                    value={newTask.category}
+                    onChange={handleChange}
+                    className="w-50 mt-1 p-3 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
+                    >
+                    <option value="personal">Personal</option>
+                    <option value="work">Work</option>
+                    <option value="study">Study</option>
+                    <option value="health">Health</option>
+                    <option value="finances">Finances</option>
+                    <option value="entertainment ">Entertainment </option>
                 </select>
             </div>
 
